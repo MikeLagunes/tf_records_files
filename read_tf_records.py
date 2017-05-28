@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 testing_dataset = [
-    '/home/mikelf/Datasets/T-lessV2/shards/test_full/tless_test-00000-of-00004-full.tfrecords']
+    '/home/mikelf/Datasets/T-lessV2/shards/stn_test/tless_train-00000-of-00004-stn_75_75.tfrecords']
 
 
 def read_and_decode(filename_queue):

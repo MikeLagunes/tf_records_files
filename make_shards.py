@@ -93,28 +93,30 @@ from scipy import ndimage
 
 # RGB: rgb
 
-tf.app.flags.DEFINE_string('train_directory', '/home/mikelf/Datasets/T-lessV2/train_canon_cropped_ranrot_x5',
+tf.app.flags.DEFINE_string('train_directory', '/home/mikelf/flower_Dataset/flower_photos/training',
                            'Training data directory')
 
-tf.app.flags.DEFINE_string('validation_directory', '/home/mikelf/Datasets/T-lessV2/validate_canon_cropped_227',
+tf.app.flags.DEFINE_string('validation_directory', '/home/mikelf/flower_Dataset/flower_photos/validation',
                            'Validation data directory')
 
-tf.app.flags.DEFINE_string('test_directory', '/home/mikelf/Datasets/T-lessV2/test_canon_cropped',
+tf.app.flags.DEFINE_string('test_directory', '/home/mikelf/Datasets/T-lessV2/test_canon_cropped_227',
                            'Testing data directory')
 
 tf.app.flags.DEFINE_string('output_directory', '/home/mikelf/Datasets/T-lessV2/shards',
                            'Output data directory')
 
-tf.app.flags.DEFINE_integer('train_shards', 4,
+# 4 usually
+
+tf.app.flags.DEFINE_integer('train_shards', 1,
                             'Number of shards in training TFRecord files.')
 
-tf.app.flags.DEFINE_integer('validation_shards', 4,
+tf.app.flags.DEFINE_integer('validation_shards', 1,
                             'Number of shards in validation TFRecord files.')
 
 tf.app.flags.DEFINE_integer('testing_shards', 4,
                             'Number of shards in validation TFRecord files.')
 
-tf.app.flags.DEFINE_integer('num_threads', 4,
+tf.app.flags.DEFINE_integer('num_threads', 1,
                             'Number of threads to preprocess the images.')
 
 # 2,2,2
@@ -128,10 +130,10 @@ tf.app.flags.DEFINE_integer('num_threads', 4,
 # the file to an integer corresponding to the line number starting from 0.
 
 # LOADING RGB data info
-tf.app.flags.DEFINE_string('labels_file', '/home/mikelf/Datasets/T-lessV2/labels_file', 'Labels file')
+tf.app.flags.DEFINE_string('labels_file', '/home/mikelf/flower_Dataset/flower_photos/training/labels', 'Labels file')
 
-dataset = 'tless_'
-folder = 'full'
+dataset = 'flowers_'
+folder = '5_class'
 
 # tf.app.flags.DEFINE_string('labels_file', '/home/mikelf/CIFAR_extra/training/rgb/labels_file_test', 'Labels file')
 
@@ -171,7 +173,7 @@ def _convert_to_example(index, filename, img_string, label, text, height, width,
     # print(index)
 
     colorspace = 'RGB'
-    image_format = 'jpeg'
+    image_format = 'jpg'
 
     #image_raw = img_tensor.tostring()
 
@@ -209,11 +211,16 @@ def _process_image(filename):
     # Read the image file.
 
     image_array =tf.gfile.FastGFile(filename, 'r').read()
+
+    resized_image = tf.image.resize_images(image_array, [227, 227])
+
     image_size = ndimage.imread(filename)
 
-    height,width,channels = image_size.shape[0],image_size.shape[1],image_size.shape[2]
+    #height,width,channels = image_size.shape[0],image_size.shape[1],image_size.shape[2]
 
-    return image_array, height, width, channels
+    height, width, channels = 227, 227, 3
+
+    return resized_image, height, width, channels
 
 
 
@@ -425,10 +432,10 @@ def main(unused_argv):
     # Run it!
     #_process_dataset('validation', FLAGS.validation_directory,
     #                 FLAGS.validation_shards, FLAGS.labels_file)
-    _process_dataset('test', FLAGS.test_directory,
-                     FLAGS.testing_shards, FLAGS.labels_file)
-    #_process_dataset('train', FLAGS.train_directory,
-    #                 FLAGS.train_shards, FLAGS.labels_file)
+    #_process_dataset('test', FLAGS.test_directory,
+    #                 FLAGS.testing_shards, FLAGS.labels_file)
+    _process_dataset('train', FLAGS.train_directory,
+                     FLAGS.train_shards, FLAGS.labels_file)
 
 
 if __name__ == '__main__':
